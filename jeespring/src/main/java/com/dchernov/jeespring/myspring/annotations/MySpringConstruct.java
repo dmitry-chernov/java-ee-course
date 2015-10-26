@@ -5,10 +5,15 @@
  */
 package com.dchernov.jeespring.myspring.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  *
  * @author Dc
  */
-public interface Init {
+@Retention(value = RetentionPolicy.RUNTIME)
+public @interface MySpringConstruct {
     
 }
+

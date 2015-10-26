@@ -5,6 +5,10 @@
  */
 package com.dchernov.jeespring;
 
+import com.dchernov.jeespring.myspring.MySpring;
+import com.dchernov.jeespring.myspring.MySpringContext;
+import com.dchernov.jeespring.testclasses.TestBean;
+import com.dchernov.jeespring.testclasses.TestSingleton;
 import org.apache.log4j.Logger;
 
 /**
@@ -16,7 +20,31 @@ public class Main {
     private static final Logger log = Logger.getLogger(Main.class);
 
     public static void main(String[] args) {
-        log.info("Hello world!", new Exception("Exception"));
+        try {
+            log.info("Hello world!");
+            MySpringContext context = MySpring.getContext();
+            TestBean b1 = context.getBean(TestBean.class);
+            TestBean b2 = context.getBean(TestBean.class);
+            log.info("Object 1: " + b1.myStr + " -- " + b1.myInt);
+            log.info("Object 2: " + b2.myStr + " -- " + b2.myInt);
+            b1.mySet("String changed");
+            log.info("Object 1 changed: " + b1.myStr + " -- " + b1.myInt);
+            log.info("Object 2 unchanged: " + b2.myStr + " -- " + b2.myInt);
+
+            TestSingleton s1 = context.getBean(TestSingleton.class);
+            TestSingleton s2 = context.getBean(TestSingleton.class);
+            log.info("Singleton 1: " + s1.myStr + " -- " + s1.myInt);
+            log.info("Singleton 2: " + s2.myStr + " -- " + s2.myInt);
+            s2.mySet("String changed");
+            log.info("Singleton 1 changed: " + s1.myStr + " -- " + s2.myInt);
+            log.info("Singleton 2 changed: " + s1.myStr + " -- " + s2.myInt);
+            
+            context.destroyBean(b2);
+            log.info("=== Destroy All ===");
+            context.destroyConext();
+        } catch (Exception ex) {
+            log.error("ERROR", ex);
+        }
     }
 
 }
