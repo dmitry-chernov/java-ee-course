@@ -22,12 +22,12 @@ public class TestSingleton {
 
     @MySpringConstruct
     public void init() {
-        log.trace("Singleton Initialized");
+        log.trace("Singleton Initialized -- " + this.hashCode());
     }
 
     @MySpringDestruct
     public void destroy() {
-        log.trace("Singleton Destroyed");
+        log.trace("Singleton Destroyed -- " + this.hashCode());
     }
 
     @MySpringInitValue(intValue = 55)

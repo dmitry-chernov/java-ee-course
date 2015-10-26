@@ -30,7 +30,7 @@ public class MySpring implements MySpringContext {
     //////////////////// Interface ///////////////////////
     /**
      *
-     * @return The context set by {@link #setContext(com.dchernov.jeespring.myspring.MySpringContext)
+     * @return The context set by {@link #setContext(MySpringContext)
      * } or default context if not set
      */
     public static MySpringContext getContext() {
@@ -148,14 +148,18 @@ public class MySpring implements MySpringContext {
                 if (value != null) {
                     if (m instanceof Method) {
                         ((Method) m).invoke(bean, value);
-                        log.trace("Call setter " + beanClass.getName() + "."
-                                + ((Method) m).getName()
-                                + "(" + value + ")");
+                        if (log.isTraceEnabled()) {
+                            log.trace("Call setter " + beanClass.getName() + "."
+                                    + ((Method) m).getName()
+                                    + "(" + value + ")");
+                        }
                     } else {
                         ((Field) m).set(bean, value);
-                        log.trace("Set field " + beanClass.getName() + "."
-                                + ((Field) m).getName()
-                                + " = " + value);
+                        if (log.isTraceEnabled()) {
+                            log.trace("Set field " + beanClass.getName() + "."
+                                    + ((Field) m).getName()
+                                    + " = " + value);
+                        }
                     }
                 }
             }
@@ -185,14 +189,7 @@ public class MySpring implements MySpringContext {
 
     @SuppressWarnings("empty-statement")
     private void runBeanDestructor(Object bean) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Class<?> c;
-        for (c = bean.getClass();
-                c != null && c.getAnnotation(MySpringBean.class) == null;
-                c = c.getSuperclass()) {
-        }
-        if (c != null) {
-            runAnnotatedMember(bean, c, MySpringDestruct.class);
-        }
+        runAnnotatedMember(bean, bean.getClass(), MySpringDestruct.class);
     }
     private Set<Object> beansCache = new HashSet<>();
     private Map<Class, Object> singletonCache = new Hashtable<>();
