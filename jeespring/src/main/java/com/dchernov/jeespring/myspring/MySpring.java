@@ -14,8 +14,8 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import org.apache.log4j.Logger;
@@ -191,5 +191,5 @@ public class MySpring implements MySpringContext {
         runAnnotatedMember(bean, bean.getClass(), MySpringDestruct.class);
     }
     private Set<Object> beansCache = new HashSet<>();
-    private Map<Class, Object> singletonCache = new Hashtable<>();
+    private Map<Class, Object> singletonCache = new HashMap<>();
 }
