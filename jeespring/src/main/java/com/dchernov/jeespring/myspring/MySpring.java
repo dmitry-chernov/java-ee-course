@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
