@@ -33,20 +33,19 @@ public class MySpring implements MySpringContext {
      * } or default context if not set
      */
     public static MySpringContext getContext() {
-        return context == null ? new MySpring() : context;
+        return context == null ? context = new MySpring() : context;
     }
 
     /**
      *
-     * @param c The custom context extends MySpring. Can be set once; can't be
-     * changed;
+     * @param c The custom context extends MySpring. 
      * @throws Exception
      */
     public static void setContext(MySpringContext c) throws Exception {
         if (context == null) {
             context = c;
         } else {
-            throw new Exception("Context is already set and can't be changed");
+            throw new Exception("Context is already set and can't be changed. Call destroyConext() before.");
         }
     }
 
@@ -90,6 +89,7 @@ public class MySpring implements MySpringContext {
             }
         }
         singletonCache.clear();
+        context = null;
     }
 
     @Override

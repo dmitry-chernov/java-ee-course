@@ -38,6 +38,7 @@ public class Main {
                 
             };
             MySpring.setContext(theCustomSpring);
+MySpring.setContext(theCustomSpring);
             MySpringContext context = MySpring.getContext();
             TestBean b1 = context.getBean(TestBean.class);
             TestBean b2 = context.getBean(TestBean.class);
