@@ -88,7 +88,7 @@
       <xs:element name="return" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/book/BookService</con:endpoint></con:endpoints><con:operation id="27b43f3c-efcf-409b-9bc0-7e3368166061" isOneWay="false" action="" name="hello" bindingOperationName="hello" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="b9044d3d-a302-4487-a780-e43ef6236556" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/book/BookService</con:endpoint></con:endpoints><con:operation id="27b43f3c-efcf-409b-9bc0-7e3368166061" isOneWay="false" action="" name="hello" bindingOperationName="hello" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="b9044d3d-a302-4487-a780-e43ef6236556" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <soap:hello>\r
@@ -96,19 +96,19 @@
          <name>?</name>\r
       </soap:hello>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/helloRequest"/></con:call></con:operation><con:operation id="f20701fb-9ebc-4f94-bb6e-f5fd74c6b659" isOneWay="false" action="" name="importPublisher" bindingOperationName="importPublisher" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="739399da-afc4-4ba6-aedc-49603108f0ea" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/helloRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="f20701fb-9ebc-4f94-bb6e-f5fd74c6b659" isOneWay="false" action="" name="importPublisher" bindingOperationName="importPublisher" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="739399da-afc4-4ba6-aedc-49603108f0ea" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <soap:importPublisher>\r
          <!--Optional:-->\r
          <publisher>\r
             <!--Optional:-->\r
-            <city>?</city>\r
+            <city>aaa</city>\r
             <!--Optional:-->\r
-            <id>?</id>\r
+            <id>100</id>\r
             <!--Optional:-->\r
-            <name>?</name>\r
+            <name>bbb</name>\r
          </publisher>\r
       </soap:importPublisher>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importPublisherRequest"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importPublisherRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
