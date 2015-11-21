@@ -33,11 +33,20 @@ public class BookImporterBean implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        ObjectMessage objectMessage = (ObjectMessage) message;
         try {
-            Object object = objectMessage.getObject();
-            object = bookDAO.persist(object);
-            LOG.log(Level.INFO, "MSG>>>>>>>>{0}", object);
+            Object object = ((ObjectMessage) message).getObject();
+            if (message.getJMSRedelivered()) {
+                int redeliverCount = message.getIntProperty("JMSXDeliveryCount");
+                if (redeliverCount == 2) {
+                    object = bookDAO.merge(object);
+                    LOG.log(Level.INFO, "Already exists, update: {0}", object);
+                } else {
+                    LOG.log(Level.INFO, "Failed: {0}", object);
+                }
+            } else {
+                object = bookDAO.persist(object);
+                LOG.log(Level.INFO, "New item, insert: {0}", object);
+            }
         } catch (JMSException ex) {
             Logger.getLogger(BookImporterBean.class.getName()).log(Level.SEVERE, null, ex);
         }
