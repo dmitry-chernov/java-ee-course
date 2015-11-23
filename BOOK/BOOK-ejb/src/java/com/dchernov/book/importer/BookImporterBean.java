@@ -34,21 +34,20 @@ public class BookImporterBean implements MessageListener {
     @Override
     public void onMessage(Message message) {
         try {
-            Object object = ((ObjectMessage) message).getObject();
-            if (message.getJMSRedelivered()) {
-                int redeliverCount = message.getIntProperty("JMSXDeliveryCount");
-                if (redeliverCount == 2) {
-                    object = bookDAO.merge(object);
-                    LOG.log(Level.INFO, "Already exists, update: {0}", object);
+            if (message instanceof ObjectMessage) {
+                Object object = ((ObjectMessage) message).getObject();
+                if (message.getJMSRedelivered()) {
+                    LOG.log(Level.INFO, "DELIVERY COUNT:{0}", message.getIntProperty("JMSXDeliveryCount"));
+                    bookDAO.printLOG("Failed", object);
                 } else {
-                    LOG.log(Level.INFO, "Failed: {0}", object);
+                    object = bookDAO.persistOrMerge(object);
+                    bookDAO.printLOG("Done", object);
                 }
-            } else {
-                object = bookDAO.persist(object);
-                LOG.log(Level.INFO, "New item, insert: {0}", object);
             }
         } catch (JMSException ex) {
-            Logger.getLogger(BookImporterBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BookImporterBean.class.getName()).log(Level.SEVERE, "!!!!!!!!!!!!!!", ex);
         }
+
     }
+
 }

@@ -6,6 +6,7 @@
 package com.dchernov.book.soap;
 
 import com.dchernov.book.entity.Publisher;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -46,6 +47,15 @@ public class BookService {
 
     @WebMethod(operationName = "importPublisher")
     public Publisher importPublisher(@WebParam(name = "publisher") Publisher item) {
+        return importItem(item);
+    }
+
+    @WebMethod(operationName = "importListOfPublishers")
+    public Publisher[] importListOfPublishers(@WebParam(name = "publisher") Publisher[] item) {
+        return importItem(item);
+    }
+    
+    private <T extends Serializable> T importItem(T item) {
         JMSProducer producer = context.createProducer();
         ObjectMessage message = context.createObjectMessage();
         try {

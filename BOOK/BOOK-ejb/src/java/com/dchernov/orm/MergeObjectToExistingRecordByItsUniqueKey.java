@@ -39,7 +39,7 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
     private static final Logger LOG = Logger.getLogger(MergeObjectToExistingRecordByItsUniqueKey.class.getName());
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public <T> void setObjectId(T object, EntityManager em) {
+    public <T> T setObjectId(T object, EntityManager em) {
         RetriveSql retriveSQL = classCache.get(object.getClass());
         if (retriveSQL == null) {
             retriveSQL = new RetriveSql(object, em);
@@ -47,6 +47,7 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
         }
         List rs = retriveSQL.execQuery(em, object);
         retriveSQL.setId(object, rs.isEmpty() ? null : rs.get(0));
+        return object;
     }
     private final Map<Class<?>, RetriveSql> classCache = Collections.synchronizedMap(new HashMap<>());
 
@@ -64,7 +65,9 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
                 }
                 Class c = object.getClass();
                 addMemebers(c.getMethods());
-                addMemebers(c.getDeclaredFields());
+                for (Class cls = c; cls != null; cls = cls.getSuperclass()) {
+                    addMemebers(cls.getDeclaredFields());
+                }
                 createQuery(c, em);
             }
 
