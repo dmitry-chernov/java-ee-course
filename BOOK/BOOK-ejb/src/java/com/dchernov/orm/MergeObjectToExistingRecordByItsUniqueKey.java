@@ -38,7 +38,6 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
 
     private static final Logger LOG = Logger.getLogger(MergeObjectToExistingRecordByItsUniqueKey.class.getName());
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <T> T setObjectId(T object, EntityManager em) {
         RetriveSql retriveSQL = classCache.get(object.getClass());
         if (retriveSQL == null) {

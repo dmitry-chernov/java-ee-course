@@ -5,27 +5,19 @@
  */
 package com.dchernov.book.dao;
 
+import com.dchernov.book.dao.exception.DuplicateUniqueKeyException;
 import com.dchernov.orm.MergeObjectToExistingRecordByItsUniqueKey;
-import java.util.Arrays;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 /**
  *
@@ -33,82 +25,81 @@ import javax.transaction.UserTransaction;
  */
 @Stateless
 @LocalBean
-@TransactionManagement(TransactionManagementType.BEAN)
 public class BookDAO {
-
-    public static class DuplicateUniqueKeyException extends Exception {
-
-        public DuplicateUniqueKeyException(Throwable cause) {
-            super(cause);
-        }
-
-    }
 
     private static final Logger LOG = Logger.getLogger(BookDAO.class.getName());
 
     @PersistenceContext(unitName = "BOOK-ejbPU")
     private EntityManager em;
-    @Resource
-    UserTransaction tx;
 
     @EJB
     private MergeObjectToExistingRecordByItsUniqueKey mergeObject;
 
+    @EJB
+    BookDAO recursiveBookDAO;
+
+    /**
+     *  1. Try to insert new (if ID == null) 
+     *          or update by ID in a separate transaction
+     *  2. On "duplicate unique key" exception: 
+     *          update by the unique key 
+     *          marked by "@UniqueConstraint(name = "IDENTITY_KEY"...."
+     *          in the current transaction
+     * @param <T> Entity class
+     * @param object Entity instance to be processed
+     * @return The object merged into EntityManager context
+     */
     public <T> T persistOrMerge(T object) {
         try {
-            object = persist(object);
+            object = recursiveBookDAO.mergeById(object);
         } catch (DuplicateUniqueKeyException ex) {
-            object = merge(object);
+            object = mergeByKey(object);
         }
         return object;
     }
 
-    public <T> T persist(T object) throws DuplicateUniqueKeyException {
+    /**
+     * The method inserts new item (if ID == null or doesn't exists in the DB) 
+     * or updates existing item by ID
+     *
+     * @param <T> Entity class
+     * @param object Entity instance to be processed
+     * @return The object merged into EntityManager context
+     * @throws DuplicateUniqueKeyException on unique key violation
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public <T> T mergeById(T object) throws DuplicateUniqueKeyException {
         try {
-            boolean useOwnTransaction = tx.getStatus() == Status.STATUS_NO_TRANSACTION;
-            if (useOwnTransaction) {
-                tx.begin();
-            }
             object = processObjectOrArray(object, (obj) -> {
                 return em.merge(obj);
             });
             em.flush();
-            if (useOwnTransaction) {
-                tx.commit();
-            }
-            printLOG("New item(s), inserted", object);
+            printLOG("Item(s) are inserted or updated by ID", object);
         } catch (PersistenceException ex) {
-            try {
-                printLOG("Already exists, not inserted ", object);
-                tx.rollback();
-            } catch (IllegalStateException | SecurityException | SystemException ex1) {
-                Logger.getLogger(BookDAO.class.getName()).log(Level.SEVERE, null, ex1);
-            }
+            printLOG("Unique key violation, not inserted/updated", object);
             throw new DuplicateUniqueKeyException(ex);
-        } catch (RollbackException | SystemException | NotSupportedException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            throw new PersistenceException(ex);
         }
         return object;
     }
 
-    public <T> T merge(T object) {
-        try {
-            boolean useOwnTransaction = tx.getStatus() == Status.STATUS_NO_TRANSACTION;
-            if (useOwnTransaction) {
-                tx.begin();
-            }
-            final EntityManager emm = em;
-            object = processObjectOrArray(object, (obj) -> {
-                return em.merge(mergeObject.setObjectId(obj, emm));
-            });
-            em.flush();
-            if (useOwnTransaction) {
-                tx.commit();
-            }
-            printLOG("Existing item(s), updated", object);
-        } catch (RollbackException | SystemException | NotSupportedException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            throw new PersistenceException(ex);
-        }
+    /**
+     *  The method merges and updates item
+     *  by the unique key 
+     *  marked by "@UniqueConstraint(name = "IDENTITY_KEY"...."
+     *  or inserts new item if the unique key doesn't exist in DB
+     *
+     * @param <T> Entity class
+     * @param object Entity instance to be processed
+     * @return The object merged into EntityManager context
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public <T> T mergeByKey(T object) {
+        final EntityManager emm = em;
+        object = processObjectOrArray(object, (obj) -> {
+            return em.merge(mergeObject.setObjectId(obj, emm));
+        });
+        em.flush();
+        printLOG("Item(s) are updated by key or inserted", object);
         return object;
     }
 
