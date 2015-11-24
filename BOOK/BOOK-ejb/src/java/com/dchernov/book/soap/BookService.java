@@ -5,8 +5,10 @@
  */
 package com.dchernov.book.soap;
 
+import com.dchernov.book.entity.Book;
 import com.dchernov.book.entity.Publisher;
 import java.io.Serializable;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -45,16 +47,33 @@ public class BookService {
         return "Hello " + txt + " !";
     }
 
+    @WebMethod(operationName = "importBook")
+    public Book importBook(@WebParam(name = "book") Book item) {
+        return importItem(item);
+    }
+
+    @WebMethod(operationName = "importListOfBooks")
+    public Book[] importListOfBooks(@WebParam(name = "book") Book[] item) {
+        return importItem(item);
+    }
+
     @WebMethod(operationName = "importPublisher")
     public Publisher importPublisher(@WebParam(name = "publisher") Publisher item) {
-        return importItem(item);
+        Set<Book> booksPublished = item.getBooksPublished();
+        for (Book b : booksPublished) {
+            b.setPublisher(item);
+        }
+        item.setBooksPublished(null);
+        item = importItem(item);
+        importItem(booksPublished.toArray());
+        return item;
     }
 
     @WebMethod(operationName = "importListOfPublishers")
     public Publisher[] importListOfPublishers(@WebParam(name = "publisher") Publisher[] item) {
         return importItem(item);
     }
-    
+
     private <T extends Serializable> T importItem(T item) {
         JMSProducer producer = context.createProducer();
         ObjectMessage message = context.createObjectMessage();

@@ -6,13 +6,18 @@
 package com.dchernov.book.entity;
 
 import java.io.Serializable;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -31,9 +36,15 @@ public class Publisher implements Serializable {
     private String city;
     @Column(name = "name")
     private String name;
+    @OneToMany(mappedBy = "publisher", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<Book> booksPublished;
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCity() {
@@ -52,13 +63,22 @@ public class Publisher implements Serializable {
         this.name = name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Set<Book> getBooksPublished() {
+        return booksPublished;
+    }
+
+    public void setBooksPublished(Set<Book> booksPublished) {
+        this.booksPublished = booksPublished;
     }
 
     @Override
     public String toString() {
-        return "com.dchernov.book.entity.Publisher[ id=" + id + " ]={" + name + "," + city + "}";
+        String r = "com.dchernov.book.entity.Publisher[ id=" + id + " ]={" + name + "," + city
+                + ", [";
+        for (Book b : booksPublished) {
+            r += "{" + b + "}";
+        }
+        r += "]}";
+        return r;
     }
-
 }
