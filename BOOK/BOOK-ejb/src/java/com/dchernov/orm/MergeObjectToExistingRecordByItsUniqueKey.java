@@ -9,21 +9,26 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Query;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -59,13 +64,11 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
         public <T> RetriveSql(T object, EntityManager em) {
             String[] columnNames = getColumnNames(object);
             if (columnNames != null) {
-                for (String cn : columnNames) {
-                    nameValueMap.put(cn, null);
-                }
+                Set<String> columns = new HashSet<>(Arrays.asList(columnNames));
                 Class c = object.getClass();
-                addMemebers(c.getMethods());
+                addMembers(c.getMethods(), columns);
                 for (Class cls = c; cls != null; cls = cls.getSuperclass()) {
-                    addMemebers(cls.getDeclaredFields());
+                    addMembers(cls.getDeclaredFields(), columns);
                 }
                 createQuery(c, em);
             }
@@ -75,7 +78,7 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
         public <T> List execQuery(EntityManager em, T object) {
             Query q = em.createQuery(query);
             setParameters(q, object);
-            LOG.info(q.toString());
+            LOG.log(Level.INFO, "{0} => {1}", new Object[]{query, q.toString()});
             return q.getResultList();
         }
 
@@ -149,16 +152,32 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
             }
         }
 
-        private void addMemebers(AccessibleObject[] members) {
+        private void addMembers(AccessibleObject[] members, Set<String> columns) {
             for (AccessibleObject m : members) {
-                Column col = m.getAnnotation(Column.class);
-                if (col != null && nameValueMap.containsKey(col.name())) {
-                    nameValueMap.put(col.name(), m);
-                }
                 if (m.isAnnotationPresent(Id.class)) {
                     idMember = m;
                 }
+                Column col = m.getAnnotation(Column.class);
+                if (col != null && columns.contains(col.name())) {
+                    nameValueMap.put(getMemberName(m), m);
+                }
+                ManyToOne m2o = m.getAnnotation(ManyToOne.class);
+                JoinColumn jc = m.getAnnotation(JoinColumn.class);
+                if (m2o != null && jc != null && columns.contains(jc.name())) {
+                    nameValueMap.put(getMemberName(m), m);
+                }
             }
+        }
+
+        private String getMemberName(AccessibleObject m) {
+            String r = null;
+            if (m instanceof Field) {
+                r = ((Field) m).getName();
+            } else if (m instanceof Method) {
+                Matcher mt = xNameBehindGetter.matcher(((Method) m).getName());
+                r = mt.find(0) ? mt.group(1).toLowerCase() + mt.group(2) : null;;
+            }
+            return r;
         }
 
         private <T> void createQuery(Class<T> cls, EntityManager em) {
@@ -177,4 +196,5 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
             query = queryString.toString();
         }
     }
+    private final static Pattern xNameBehindGetter = Pattern.compile("^get(\\w)(\\w*)");
 }
