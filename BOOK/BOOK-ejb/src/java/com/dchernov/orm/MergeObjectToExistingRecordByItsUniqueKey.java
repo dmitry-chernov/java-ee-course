@@ -172,9 +172,8 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
                 if (col != null && columns.contains(col.name())) {
                     nameValueMap.put(getMemberName(m), m);
                 }
-                ManyToOne m2o = m.getAnnotation(ManyToOne.class);
                 JoinColumn jc = m.getAnnotation(JoinColumn.class);
-                if (m2o != null && jc != null && columns.contains(jc.name())) {
+                if (m.isAnnotationPresent(ManyToOne.class) && jc != null && columns.contains(jc.name())) {
                     nameValueMap.put(getMemberName(m), m);
                     recursiveFields.add(m);
                 }
