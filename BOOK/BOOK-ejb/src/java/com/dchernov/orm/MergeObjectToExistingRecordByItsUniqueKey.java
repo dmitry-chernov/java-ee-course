@@ -44,13 +44,23 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
     private static final Logger LOG = Logger.getLogger(MergeObjectToExistingRecordByItsUniqueKey.class.getName());
 
     public <T> T setObjectId(T object, EntityManager em) {
-        RetriveSql retriveSQL = classCache.get(object.getClass());
-        if (retriveSQL == null) {
-            retriveSQL = new RetriveSql(object, em);
-            classCache.put(object.getClass(), retriveSQL);
+        if (object != null) {
+            RetriveSql retriveSQL = classCache.get(object.getClass());
+            if (retriveSQL == null) {
+                retriveSQL = new RetriveSql(object, em);
+                classCache.put(object.getClass(), retriveSQL);
+            }
+            for (AccessibleObject f : retriveSQL.recursiveFields) {
+                try {
+                    Object recursive = retriveSQL.getMember(object, f);
+                    setObjectId(recursive, em);
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
+                    Logger.getLogger(MergeObjectToExistingRecordByItsUniqueKey.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            List rs = retriveSQL.execQuery(em, object);
+            retriveSQL.setId(object, rs.isEmpty() ? null : rs.get(0));
         }
-        List rs = retriveSQL.execQuery(em, object);
-        retriveSQL.setId(object, rs.isEmpty() ? null : rs.get(0));
         return object;
     }
     private final Map<Class<?>, RetriveSql> classCache = Collections.synchronizedMap(new HashMap<>());
@@ -59,6 +69,7 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
 
         AccessibleObject idMember;
         TreeMap<String, AccessibleObject> nameValueMap = new TreeMap<>();
+        Set<AccessibleObject> recursiveFields = new HashSet<>();
         String query;
 
         public <T> RetriveSql(T object, EntityManager em) {
@@ -165,6 +176,7 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
                 JoinColumn jc = m.getAnnotation(JoinColumn.class);
                 if (m2o != null && jc != null && columns.contains(jc.name())) {
                     nameValueMap.put(getMemberName(m), m);
+                    recursiveFields.add(m);
                 }
             }
         }
