@@ -140,7 +140,7 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
                 UniqueConstraint[] constr = t.uniqueConstraints();
                 if (constr != null) {
                     for (UniqueConstraint uc : constr) {
-                        if ("IDENTITY_KEY".equals(uc.name())) {
+                        if (uc.name() != null && uc.name().startsWith("IDENTITY_KEY_")) {
                             r = uc.columnNames();
                             break;
                         }

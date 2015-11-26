@@ -43,7 +43,7 @@ public class BookDAO {
      *          or update by ID in a separate transaction
      *  2. On "duplicate unique key" exception: 
      *          update by the unique key 
-     *          marked by "@UniqueConstraint(name = "IDENTITY_KEY"...."
+     *          marked by "@UniqueConstraint(name = "IDENTITY_KEY_<an unique suffix>"...."
      *          in the current transaction
      * @param <T> Entity class
      * @param object Entity instance to be processed

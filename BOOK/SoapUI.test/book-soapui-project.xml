@@ -7,11 +7,11 @@
       <xsd:import namespace="http://soap.book.dchernov.com/" schemaLocation="http://localhost:8080/book/BookService?xsd=1"/>
     </xsd:schema>
   </types>
-  <message name="hello">
-    <part name="parameters" element="tns:hello"/>
+  <message name="importListOfBooks">
+    <part name="parameters" element="tns:importListOfBooks"/>
   </message>
-  <message name="helloResponse">
-    <part name="parameters" element="tns:helloResponse"/>
+  <message name="importListOfBooksResponse">
+    <part name="parameters" element="tns:importListOfBooksResponse"/>
   </message>
   <message name="importListOfPublishers">
     <part name="parameters" element="tns:importListOfPublishers"/>
@@ -19,29 +19,49 @@
   <message name="importListOfPublishersResponse">
     <part name="parameters" element="tns:importListOfPublishersResponse"/>
   </message>
+  <message name="importBook">
+    <part name="parameters" element="tns:importBook"/>
+  </message>
+  <message name="importBookResponse">
+    <part name="parameters" element="tns:importBookResponse"/>
+  </message>
   <message name="importPublisher">
     <part name="parameters" element="tns:importPublisher"/>
   </message>
   <message name="importPublisherResponse">
     <part name="parameters" element="tns:importPublisherResponse"/>
   </message>
+  <message name="hello">
+    <part name="parameters" element="tns:hello"/>
+  </message>
+  <message name="helloResponse">
+    <part name="parameters" element="tns:helloResponse"/>
+  </message>
   <portType name="BookService">
-    <operation name="hello">
-      <input wsam:Action="http://soap.book.dchernov.com/BookService/helloRequest" message="tns:hello"/>
-      <output wsam:Action="http://soap.book.dchernov.com/BookService/helloResponse" message="tns:helloResponse"/>
+    <operation name="importListOfBooks">
+      <input wsam:Action="http://soap.book.dchernov.com/BookService/importListOfBooksRequest" message="tns:importListOfBooks"/>
+      <output wsam:Action="http://soap.book.dchernov.com/BookService/importListOfBooksResponse" message="tns:importListOfBooksResponse"/>
     </operation>
     <operation name="importListOfPublishers">
       <input wsam:Action="http://soap.book.dchernov.com/BookService/importListOfPublishersRequest" message="tns:importListOfPublishers"/>
       <output wsam:Action="http://soap.book.dchernov.com/BookService/importListOfPublishersResponse" message="tns:importListOfPublishersResponse"/>
     </operation>
+    <operation name="importBook">
+      <input wsam:Action="http://soap.book.dchernov.com/BookService/importBookRequest" message="tns:importBook"/>
+      <output wsam:Action="http://soap.book.dchernov.com/BookService/importBookResponse" message="tns:importBookResponse"/>
+    </operation>
     <operation name="importPublisher">
       <input wsam:Action="http://soap.book.dchernov.com/BookService/importPublisherRequest" message="tns:importPublisher"/>
       <output wsam:Action="http://soap.book.dchernov.com/BookService/importPublisherResponse" message="tns:importPublisherResponse"/>
     </operation>
+    <operation name="hello">
+      <input wsam:Action="http://soap.book.dchernov.com/BookService/helloRequest" message="tns:hello"/>
+      <output wsam:Action="http://soap.book.dchernov.com/BookService/helloResponse" message="tns:helloResponse"/>
+    </operation>
   </portType>
   <binding name="BookServicePortBinding" type="tns:BookService">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-    <operation name="hello">
+    <operation name="importListOfBooks">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
@@ -59,7 +79,25 @@
         <soap:body use="literal"/>
       </output>
     </operation>
+    <operation name="importBook">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
     <operation name="importPublisher">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="hello">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
@@ -78,10 +116,14 @@
 <xs:schema version="1.0" targetNamespace="http://soap.book.dchernov.com/" xmlns:tns="http://soap.book.dchernov.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="hello" type="tns:hello"/>
   <xs:element name="helloResponse" type="tns:helloResponse"/>
+  <xs:element name="importBook" type="tns:importBook"/>
+  <xs:element name="importBookResponse" type="tns:importBookResponse"/>
+  <xs:element name="importListOfBooks" type="tns:importListOfBooks"/>
+  <xs:element name="importListOfBooksResponse" type="tns:importListOfBooksResponse"/>
   <xs:element name="importListOfPublishers" type="tns:importListOfPublishers"/>
   <xs:element name="importListOfPublishersResponse" type="tns:importListOfPublishersResponse"/>
-  <xs:element name="importPublisher" nillable="true" type="tns:importListOfPublishers"/>
-  <xs:element name="importPublisherResponse" nillable="true" type="tns:importListOfPublishersResponse"/>
+  <xs:element name="importPublisher" type="tns:importPublisher"/>
+  <xs:element name="importPublisherResponse" type="tns:importPublisherResponse"/>
   <xs:complexType name="importListOfPublishers">
     <xs:sequence>
       <xs:element name="publisher" type="tns:publisher" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
@@ -89,14 +131,53 @@
   </xs:complexType>
   <xs:complexType name="publisher">
     <xs:sequence>
+      <xs:element name="booksPublished" type="tns:book" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="city" type="xs:string" minOccurs="0"/>
       <xs:element name="id" type="xs:long" minOccurs="0"/>
       <xs:element name="name" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
+  <xs:complexType name="book">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long" minOccurs="0"/>
+      <xs:element name="publisher" type="tns:publisher" minOccurs="0"/>
+      <xs:element name="title" type="xs:string" minOccurs="0"/>
+      <xs:element name="yearOfPublishing" type="xs:int" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
   <xs:complexType name="importListOfPublishersResponse">
     <xs:sequence>
       <xs:element name="return" type="tns:publisher" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="importListOfBooks">
+    <xs:sequence>
+      <xs:element name="book" type="tns:book" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="importListOfBooksResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:book" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="importBook">
+    <xs:sequence>
+      <xs:element name="book" type="tns:book" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="importBookResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:book" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="importPublisher">
+    <xs:sequence>
+      <xs:element name="publisher" type="tns:publisher" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="importPublisherResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:publisher" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="hello">
@@ -132,6 +213,32 @@
          </publisher>\r
       </soap:importPublisher>\r
    </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importPublisherRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="07c416ff-4a96-4d8b-aa23-b9cd143df615" name="Request 2"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <soap:importPublisher>\r
+         <!--Optional:-->\r
+         <publisher>\r
+            <!--Zero or more repetitions:-->\r
+            <booksPublished>\r
+               <!--Optional:-->\r
+               <id>?</id>\r
+               <!--Optional:-->\r
+               <publisher/>\r
+               <!--Optional:-->\r
+               <title>?</title>\r
+               <!--Optional:-->\r
+               <yearOfPublishing>?</yearOfPublishing>\r
+            </booksPublished>\r
+            <!--Optional:-->\r
+            <city>?</city>\r
+            <!--Optional:-->\r
+            <id>?</id>\r
+            <!--Optional:-->\r
+            <name>?</name>\r
+         </publisher>\r
+      </soap:importPublisher>\r
+   </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importPublisherRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="42a8cc93-09f9-401b-94dc-b93d89a99fcd" isOneWay="false" action="" name="importListOfPublishers" bindingOperationName="importListOfPublishers" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="3920d22b-7999-42a9-b355-864716f3b54e" name="Request 2"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
@@ -153,4 +260,56 @@
          </publisher>
       </soap:importListOfPublishers>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importListOfPublishersRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importListOfPublishersRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="e0aec1ff-514e-4d21-b056-a14e58be095a" isOneWay="false" action="" name="importListOfBooks" bindingOperationName="importListOfBooks" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="7e2e786d-6cae-4a73-97b5-a52e61214133" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <soap:importListOfBooks>\r
+         <!--Zero or more repetitions:-->\r
+         <book>\r
+            <!--Optional:-->\r
+            <id>?</id>\r
+            <!--Optional:-->\r
+            <publisher>\r
+               <!--Zero or more repetitions:-->\r
+               <booksPublished/>\r
+               <!--Optional:-->\r
+               <city>?</city>\r
+               <!--Optional:-->\r
+               <id>?</id>\r
+               <!--Optional:-->\r
+               <name>?</name>\r
+            </publisher>\r
+            <!--Optional:-->\r
+            <title>?</title>\r
+            <!--Optional:-->\r
+            <yearOfPublishing>?</yearOfPublishing>\r
+         </book>\r
+      </soap:importListOfBooks>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importListOfBooksRequest"/></con:call></con:operation><con:operation id="bc40e6a9-de0b-465a-a40a-a6bd3cc56485" isOneWay="false" action="" name="importBook" bindingOperationName="importBook" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="61a7f3fe-8652-4f99-9ca3-769d900d8ab8" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <soap:importBook>\r
+         <!--Optional:-->\r
+         <book>\r
+            <!--Optional:-->\r
+            <id>?</id>\r
+            <!--Optional:-->\r
+            <publisher>\r
+               <!--Zero or more repetitions:-->\r
+               <booksPublished/>\r
+               <!--Optional:-->\r
+               <city>?</city>\r
+               <!--Optional:-->\r
+               <id>?</id>\r
+               <!--Optional:-->\r
+               <name>?</name>\r
+            </publisher>\r
+            <!--Optional:-->\r
+            <title>?</title>\r
+            <!--Optional:-->\r
+            <yearOfPublishing>?</yearOfPublishing>\r
+         </book>\r
+      </soap:importBook>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importBookRequest"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
