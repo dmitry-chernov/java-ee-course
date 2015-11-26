@@ -5,17 +5,19 @@
  */
 package com.dchernov.book.entity;
 
+import com.dchernov.book.entity.abstractitem.Item;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -26,26 +28,17 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity(name = "Book")
 @Table(name = "book", uniqueConstraints = {
-    @UniqueConstraint(name = "IDENTITY_KEY", columnNames = {"title", "publisher_id", "year"})}, indexes = {
+    @UniqueConstraint(name = "IDENTITY_KEY_Book", columnNames = {"title", "authorshash", "publisher_id", "yearofpublishing"})}, indexes = {
     @Index(columnList = "publisher_id")}
 )
-public class Book implements Serializable {
+public class Book extends Item implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Long id;
-    private String title;
+    String title;
+    Set<Author> authors;
     Publisher publisher;
     Integer yearOfPublishing;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    String authorsHash;
 
     @Column(name = "title", nullable = false)
     public String getTitle() {
@@ -56,8 +49,33 @@ public class Book implements Serializable {
         this.title = title;
     }
 
+    @Column(name = "authorshash")
+    public String getAuthorsHash() {
+        StringBuilder r = new StringBuilder();
+        for (Author a : getAuthors()) {
+            r.append(a.getId()).append(';');
+        }
+        return r.toString();
+    }
+
+    public void setAuthorsHash(String v) {
+
+    }
+
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @JoinTable(name = "book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
+    public Set<Author> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(Set<Author> authors) {
+        this.authors = authors;
+    }
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "publisher_id", foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY ( publisher_id ) REFERENCES publisher ON DELETE RESTRICT"))
+    @JoinColumn(name = "publisher_id", foreignKey = @ForeignKey(name = "publisher_fk", foreignKeyDefinition = "FOREIGN KEY ( publisher_id ) REFERENCES publisher ON DELETE RESTRICT"))
     public Publisher getPublisher() {
         return publisher;
     }
@@ -66,7 +84,7 @@ public class Book implements Serializable {
         this.publisher = publisher;
     }
 
-    @Column(name = "year_of_publishing")
+    @Column(name = "yearofpublishing")
     public Integer getYearOfPublishing() {
         return yearOfPublishing;
     }
@@ -77,7 +95,14 @@ public class Book implements Serializable {
 
     @Override
     public String toString() {
-        return "com.dchernov.book.entity.Book[ id=" + id + " ] = {" + title + "," + publisher + "}";
+        String[] authors = new String[getAuthors().size()];
+        int i = 0;
+        for (Author a : getAuthors()) {
+            authors[i++] = a.toString();
+        }
+        return super.toString()
+                + " = {" + title + " {" + String.join(",", Arrays.asList(authors)) + "} "
+                + publisher + " " + yearOfPublishing + "}";
     }
 
 }
