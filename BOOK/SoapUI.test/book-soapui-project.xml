@@ -130,20 +130,44 @@
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="publisher">
+    <xs:complexContent>
+      <xs:extension base="tns:item">
+        <xs:sequence>
+          <xs:element name="booksPublished" type="tns:book" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="city" type="xs:string" minOccurs="0"/>
+          <xs:element name="name" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="item" abstract="true">
     <xs:sequence>
-      <xs:element name="booksPublished" type="tns:book" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="city" type="xs:string" minOccurs="0"/>
       <xs:element name="id" type="xs:long" minOccurs="0"/>
-      <xs:element name="name" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="book">
-    <xs:sequence>
-      <xs:element name="id" type="xs:long" minOccurs="0"/>
-      <xs:element name="publisher" type="tns:publisher" minOccurs="0"/>
-      <xs:element name="title" type="xs:string" minOccurs="0"/>
-      <xs:element name="yearOfPublishing" type="xs:int" minOccurs="0"/>
-    </xs:sequence>
+    <xs:complexContent>
+      <xs:extension base="tns:item">
+        <xs:sequence>
+          <xs:element name="authors" type="tns:author" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="authorsHash" type="xs:string" minOccurs="0"/>
+          <xs:element name="publisher" type="tns:publisher" minOccurs="0"/>
+          <xs:element name="title" type="xs:string" minOccurs="0"/>
+          <xs:element name="yearOfPublishing" type="xs:int" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="author">
+    <xs:complexContent>
+      <xs:extension base="tns:item">
+        <xs:sequence>
+          <xs:element name="booksWritten" type="tns:book" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="firstName" type="xs:string" minOccurs="0"/>
+          <xs:element name="lastName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="importListOfPublishersResponse">
     <xs:sequence>
@@ -286,22 +310,29 @@
          </book>\r
       </soap:importListOfBooks>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importListOfBooksRequest"/></con:call></con:operation><con:operation id="bc40e6a9-de0b-465a-a40a-a6bd3cc56485" isOneWay="false" action="" name="importBook" bindingOperationName="importBook" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="61a7f3fe-8652-4f99-9ca3-769d900d8ab8" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importListOfBooksRequest"/></con:call></con:operation><con:operation id="bc40e6a9-de0b-465a-a40a-a6bd3cc56485" isOneWay="false" action="" name="importBook" bindingOperationName="importBook" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="94643067-9187-4920-bbd7-947e374b9d59" name="Request 2"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <soap:importBook>\r
-         <!--Optional:-->\r
-         <book>\r
+        <book>\r
+            <authors>\r
+               <firstName>AAA</firstName>\r
+              <lastName>BBB</lastName>\r
+            </authors>\r
+             <authors>
+               <firstName>AAA2</firstName>
+              <lastName>BBB2</lastName>
+            </authors>
             <!--Optional:-->\r
-            <id>?</id>\r
+            <authorsHash>?</authorsHash>\r
             <!--Optional:-->\r
             <publisher>\r
+               <!--Optional:-->\r
+               <id>?</id>\r
                <!--Zero or more repetitions:-->\r
                <booksPublished/>\r
                <!--Optional:-->\r
                <city>?</city>\r
-               <!--Optional:-->\r
-               <id>?</id>\r
                <!--Optional:-->\r
                <name>?</name>\r
             </publisher>\r
@@ -312,4 +343,4 @@
          </book>\r
       </soap:importBook>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importBookRequest"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importBookRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>

@@ -28,7 +28,9 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -44,7 +46,12 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
     private static final Logger LOG = Logger.getLogger(MergeObjectToExistingRecordByItsUniqueKey.class.getName());
 
     public <T> T setObjectId(T object, EntityManager em) {
-        if (object != null) {
+        return setObjectId(object, em, new HashSet<>());
+    }
+
+    private <T> T setObjectId(T object, EntityManager em, Set<Object> visited) {
+        if (object != null && !visited.contains(object)) {
+            visited.add(object);
             RetriveSql retriveSQL = classCache.get(object.getClass());
             if (retriveSQL == null) {
                 retriveSQL = new RetriveSql(object, em);
@@ -53,7 +60,7 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
             for (AccessibleObject f : retriveSQL.recursiveFields) {
                 try {
                     Object recursive = retriveSQL.getMember(object, f);
-                    setObjectId(recursive, em);
+                    setObjectId(recursive, em, visited);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
                     Logger.getLogger(MergeObjectToExistingRecordByItsUniqueKey.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -169,12 +176,14 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
                     idMember = m;
                 }
                 Column col = m.getAnnotation(Column.class);
-                if (col != null && columns.contains(col.name())) {
+                JoinColumn jc = m.getAnnotation(JoinColumn.class);
+                if (col != null && columns.contains(col.name())
+                        || jc != null && columns.contains(jc.name())) {
                     nameValueMap.put(getMemberName(m), m);
                 }
-                JoinColumn jc = m.getAnnotation(JoinColumn.class);
-                if (m.isAnnotationPresent(ManyToOne.class) && jc != null && columns.contains(jc.name())) {
-                    nameValueMap.put(getMemberName(m), m);
+                if (m.isAnnotationPresent(OneToMany.class)
+                        || m.isAnnotationPresent(ManyToOne.class)
+                        || m.isAnnotationPresent(ManyToMany.class)) {
                     recursiveFields.add(m);
                 }
             }
@@ -186,7 +195,7 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
                 r = ((Field) m).getName();
             } else if (m instanceof Method) {
                 Matcher mt = xNameBehindGetter.matcher(((Method) m).getName());
-                r = mt.find(0) ? mt.group(1).toLowerCase() + mt.group(2) : null;;
+                r = mt.find(0) ? mt.group(1).toLowerCase() + mt.group(2) : null;
             }
             return r;
         }
