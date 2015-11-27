@@ -6,9 +6,9 @@
 package com.dchernov.book.entity;
 
 import com.dchernov.book.entity.abstractitem.Item;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +21,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -31,7 +32,9 @@ import javax.persistence.UniqueConstraint;
     @UniqueConstraint(name = "IDENTITY_KEY_Book", columnNames = {"title", "authorshash", "publisher_id", "yearofpublishing"})}, indexes = {
     @Index(columnList = "publisher_id")}
 )
-public class Book extends Item implements Serializable {
+public class Book extends Item {
+
+    private static final Logger LOG = Logger.getLogger(Book.class.getName());
 
     private static final long serialVersionUID = 1L;
     String title;
@@ -79,6 +82,7 @@ public class Book extends Item implements Serializable {
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "publisher_id", foreignKey = @ForeignKey(name = "publisher_fk", foreignKeyDefinition = "FOREIGN KEY ( publisher_id ) REFERENCES publisher ON DELETE RESTRICT"))
+    @XmlJavaTypeAdapter(Publisher.PreventCycles.class)
     public Publisher getPublisher() {
         return publisher;
     }
