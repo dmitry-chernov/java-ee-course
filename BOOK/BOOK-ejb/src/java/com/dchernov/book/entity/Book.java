@@ -52,8 +52,11 @@ public class Book extends Item implements Serializable {
     @Column(name = "authorshash")
     public String getAuthorsHash() {
         StringBuilder r = new StringBuilder();
-        for (Author a : getAuthors()) {
-            r.append(a.getId()).append(';');
+        Set<Author> atrs = getAuthors();
+        if (atrs != null) {
+            for (Author a : atrs) {
+                r.append(a.getId()).append(';');
+            }
         }
         return r.toString();
     }
@@ -95,10 +98,13 @@ public class Book extends Item implements Serializable {
 
     @Override
     public String toString() {
-        String[] authors = new String[getAuthors().size()];
-        int i = 0;
-        for (Author a : getAuthors()) {
-            authors[i++] = a.toString();
+        Set<Author> atrs = getAuthors();
+        String[] authors = atrs == null ? new String[]{""} : new String[atrs.size()];
+        if (atrs != null) {
+            int i = 0;
+            for (Author a : atrs) {
+                authors[i++] = a.toString();
+            }
         }
         return super.toString()
                 + " = {" + title + " {" + String.join(",", Arrays.asList(authors)) + "} "

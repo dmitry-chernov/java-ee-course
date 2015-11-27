@@ -7,6 +7,7 @@ package com.dchernov.book.dao;
 
 import com.dchernov.book.dao.exception.DuplicateUniqueKeyException;
 import com.dchernov.orm.MergeObjectToExistingRecordByItsUniqueKey;
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,12 +40,11 @@ public class BookDAO {
     BookDAO recursiveBookDAO;
 
     /**
-     *  1. Try to insert new (if ID == null) 
-     *          or update by ID in a separate transaction
-     *  2. On "duplicate unique key" exception: 
-     *          update by the unique key 
-     *          marked by "@UniqueConstraint(name = "IDENTITY_KEY_<an unique suffix>"...."
-     *          in the current transaction
+     * 1. Try to insert new (if ID == null) or update by ID in a separate
+     * transaction 2. On "duplicate unique key" exception: update by the unique
+     * key marked by "@UniqueConstraint(name =
+     * "IDENTITY_KEY_<an unique suffix>"...." in the current transaction
+     *
      * @param <T> Entity class
      * @param object Entity instance to be processed
      * @return The object merged into EntityManager context
@@ -59,7 +59,7 @@ public class BookDAO {
     }
 
     /**
-     * The method inserts new item (if ID == null or doesn't exists in the DB) 
+     * The method inserts new item (if ID == null or doesn't exists in the DB)
      * or updates existing item by ID
      *
      * @param <T> Entity class
@@ -83,10 +83,9 @@ public class BookDAO {
     }
 
     /**
-     *  The method merges and updates item
-     *  by the unique key 
-     *  marked by "@UniqueConstraint(name = "IDENTITY_KEY"...."
-     *  or inserts new item if the unique key doesn't exist in DB
+     * The method merges and updates item by the unique key marked by
+     * "@UniqueConstraint(name = "IDENTITY_KEY"...." or inserts new item if the
+     * unique key doesn't exist in DB
      *
      * @param <T> Entity class
      * @param object Entity instance to be processed
@@ -94,9 +93,9 @@ public class BookDAO {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <T> T mergeByKey(T object) {
-        final EntityManager emm = em;
+        mergeObject.setObjectId(object, em);
         object = processObjectOrArray(object, (obj) -> {
-            return em.merge(mergeObject.setObjectId(obj, emm));
+            return em.merge(obj);
         });
         em.flush();
         printLOG("Item(s) are updated by key or inserted", object);

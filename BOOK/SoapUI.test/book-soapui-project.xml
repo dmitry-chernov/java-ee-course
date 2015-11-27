@@ -229,7 +229,7 @@
          <!--Optional:-->\r
          <publisher>\r
             <!--Optional:-->\r
-            <city>aaa</city>\r
+            <city>aaas</city>\r
             <!--Optional:-->\r
             <id>100</id>\r
             <!--Optional:-->\r
@@ -237,7 +237,7 @@
          </publisher>\r
       </soap:importPublisher>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importPublisherRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="07c416ff-4a96-4d8b-aa23-b9cd143df615" name="Request 2"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://soap.book.dchernov.com/BookService/importPublisherRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="07c416ff-4a96-4d8b-aa23-b9cd143df615" name="Request 2"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/book/BookService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.book.dchernov.com/">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <soap:importPublisher>\r
@@ -245,21 +245,21 @@
          <publisher>\r
             <!--Zero or more repetitions:-->\r
             <booksPublished>\r
+              <!--Optional:-->\r
+               <title>BBBB1</title>\r
                <!--Optional:-->\r
-               <id>?</id>\r
-               <!--Optional:-->\r
-               <publisher/>\r
-               <!--Optional:-->\r
-               <title>?</title>\r
-               <!--Optional:-->\r
-               <yearOfPublishing>?</yearOfPublishing>\r
+               <yearOfPublishing>1984</yearOfPublishing>\r
             </booksPublished>\r
+            <booksPublished>
+              <!--Optional:-->
+               <title>BBBB2</title>
+               <!--Optional:-->
+               <yearOfPublishing>1984</yearOfPublishing>
+            </booksPublished>
             <!--Optional:-->\r
-            <city>?</city>\r
+            <city>SSSS</city>\r
             <!--Optional:-->\r
-            <id>?</id>\r
-            <!--Optional:-->\r
-            <name>?</name>\r
+            <name>NNNNNNNN</name>\r
          </publisher>\r
       </soap:importPublisher>\r
    </soapenv:Body>\r
