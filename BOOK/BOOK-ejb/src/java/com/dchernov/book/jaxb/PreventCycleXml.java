@@ -11,17 +11,7 @@ package com.dchernov.book.jaxb;
  */
 public interface PreventCycleXml {
 
-    class Impl {
+    boolean getXmlAlreadyProcessed();
 
-        boolean xmldone = false;
-    };
-    Impl x = new Impl();
-
-    default boolean getAlreadyProcessed() {
-        return x.xmldone;
-    }
-
-    default void setAlreadyProcessed(boolean v) {
-        x.xmldone = v;
-    }
+    void setXmlAlreadyProcessed(boolean v);
 }
