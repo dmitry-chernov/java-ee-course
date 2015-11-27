@@ -50,23 +50,32 @@ public class MergeObjectToExistingRecordByItsUniqueKey {
     }
 
     private <T> T setObjectId(T object, EntityManager em, Set<Object> visited) {
-        if (object != null && !visited.contains(object)) {
-            visited.add(object);
-            RetriveSql retriveSQL = classCache.get(object.getClass());
-            if (retriveSQL == null) {
-                retriveSQL = new RetriveSql(object, em);
-                classCache.put(object.getClass(), retriveSQL);
+        if (object instanceof Object[] || object instanceof Iterable) {
+            for (Object o : (object instanceof Object[] ? Arrays.asList(object) : (Iterable) object)) {
+                setObjectId(o, em, visited);
             }
-            for (AccessibleObject f : retriveSQL.recursiveFields) {
-                try {
-                    Object recursive = retriveSQL.getMember(object, f);
-                    setObjectId(recursive, em, visited);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
-                    Logger.getLogger(MergeObjectToExistingRecordByItsUniqueKey.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            if (object != null && !visited.contains(object)) {
+                visited.add(object);
+                RetriveSql retriveSQL = classCache.get(object.getClass());
+                if (retriveSQL == null) {
+                    retriveSQL = new RetriveSql(object, em);
+                    classCache.put(object.getClass(), retriveSQL);
                 }
+                for (AccessibleObject f : retriveSQL.recursiveFields) {
+                    try {
+                        Object recursive = retriveSQL.getMember(object, f);
+                        if (recursive != null) {
+//                    setOwner(recursive, object);
+                            setObjectId(recursive, em, visited);
+                        }
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
+                        Logger.getLogger(MergeObjectToExistingRecordByItsUniqueKey.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                List rs = retriveSQL.execQuery(em, object);
+                retriveSQL.setId(object, rs.isEmpty() ? null : rs.get(0));
             }
-            List rs = retriveSQL.execQuery(em, object);
-            retriveSQL.setId(object, rs.isEmpty() ? null : rs.get(0));
         }
         return object;
     }

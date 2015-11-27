@@ -22,7 +22,7 @@ import javax.persistence.UniqueConstraint;
 @Entity(name = "Author")
 @Table(name = "author", uniqueConstraints = {
     @UniqueConstraint(name = "IDENTITY_KEY_Author", columnNames = {"firstname", "lastname"})})
-public class Author extends Item implements Serializable {
+public class Author extends Item {
 
     private static final long serialVersionUID = 1L;
 

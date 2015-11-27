@@ -60,12 +60,12 @@ public class BookService {
     @WebMethod(operationName = "importPublisher")
     public Publisher importPublisher(@WebParam(name = "publisher") Publisher item) {
         Set<Book> booksPublished = item.getBooksPublished();
-        for (Book b : booksPublished) {
-            b.setPublisher(item);
+        if (booksPublished != null) {
+            for (Book b : booksPublished) {
+                b.setPublisher(item);
+            }
         }
-        item.setBooksPublished(null);
         item = importItem(item);
-        importItem(booksPublished.toArray());
         return item;
     }
 
