@@ -5,10 +5,20 @@
  */
 package com.dchernov.book.entity;
 
+import com.dchernov.book.dao.BookDAO;
+import com.dchernov.book.dao.exception.DuplicateUniqueKeyException;
 import com.dchernov.book.entity.abstractitem.Item;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateful;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +31,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -53,25 +64,42 @@ public class Book extends Item {
     }
 
     @Column(name = "authorshash")
+    @XmlTransient
     public String getAuthorsHash() {
-        StringBuilder r = new StringBuilder();
         Set<Author> atrs = getAuthors();
+        String r = "";
         if (atrs != null) {
+            BookDAO bookDAO = lookupBookDAOBean();
+            String[] hash = new String[atrs.size()];
+            Set<Author> merged = new HashSet<>();
+            int i = 0;
             for (Author a : atrs) {
-                r.append(a.getId()).append(';');
+                if (a.getId() == null) {
+                    try {
+                        a = bookDAO.mergeById(a);
+                    } catch (DuplicateUniqueKeyException ex) {
+                        Logger.getLogger(Book.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                merged.add(a);
+                hash[i++] = a.getId().toString();
             }
+            setAuthors(merged);
+            Arrays.sort(hash);
+            r = String.join(",", hash);
         }
-        return r.toString();
+        return (authorsHash = r);
     }
 
     public void setAuthorsHash(String v) {
-
+        getAuthorsHash();
     }
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinTable(name = "book_author",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
+    @XmlJavaTypeAdapter(Author.PreventCycles.class)
     public Set<Author> getAuthors() {
         return authors;
     }
@@ -103,16 +131,26 @@ public class Book extends Item {
     @Override
     public String toString() {
         Set<Author> atrs = getAuthors();
-        String[] authors = atrs == null ? new String[]{""} : new String[atrs.size()];
+        String[] authorlist = atrs == null ? new String[]{""} : new String[atrs.size()];
         if (atrs != null) {
             int i = 0;
             for (Author a : atrs) {
-                authors[i++] = a.toString();
+                authorlist[i++] = a.toString();
             }
         }
         return super.toString()
-                + " = {" + title + " {" + String.join(",", Arrays.asList(authors)) + "} "
+                + " = {" + title + " {" + String.join(",", Arrays.asList(authorlist)) + "} "
                 + publisher + " " + yearOfPublishing + "}";
+    }
+
+    private BookDAO lookupBookDAOBean() {
+        try {
+            Context c = new InitialContext();
+            return (BookDAO) c.lookup("java:global/BOOK/BOOK-ejb/BookDAO!com.dchernov.book.dao.BookDAO");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
     }
 
 }
