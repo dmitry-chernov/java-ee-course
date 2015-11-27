@@ -6,13 +6,17 @@
 package com.dchernov.book.entity;
 
 import com.dchernov.book.entity.abstractitem.Item;
+import com.dchernov.book.jaxb.PreventCycleXml;
+import com.dchernov.book.jaxb.PreventCycleXmlJavaTypeAdapter;
 import java.util.Set;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -21,7 +25,12 @@ import javax.persistence.UniqueConstraint;
 @Entity(name = "Publisher")
 @Table(name = "publisher", uniqueConstraints = {
     @UniqueConstraint(name = "IDENTITY_KEY_Publisher", columnNames = {"name", "city"})})
-public class Publisher extends Item {
+@XmlJavaTypeAdapter(Publisher.PreventCycles.class)
+public class Publisher extends Item implements PreventCycleXml {
+
+    public static class PreventCycles extends PreventCycleXmlJavaTypeAdapter<Publisher> {
+    }
+    private static final Logger LOG = Logger.getLogger(Publisher.class.getName());
 
     private static final long serialVersionUID = 1L;
     @Column(name = "city")
