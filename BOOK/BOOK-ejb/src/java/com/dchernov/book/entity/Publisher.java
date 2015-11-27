@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -63,6 +64,18 @@ public class Publisher extends Item implements PreventCycleXml {
     public void setBooksPublished(Set<Book> booksPublished) {
         this.booksPublished = booksPublished;
     }
+
+    @XmlTransient
+    @Override
+    public boolean getXmlAlreadyProcessed() {
+        return xmldone;
+    }
+
+    @Override
+    public void setXmlAlreadyProcessed(boolean v) {
+        xmldone = v;
+    }
+    transient boolean xmldone = false;
 
     @Override
     public String toString() {

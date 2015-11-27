@@ -246,20 +246,20 @@
             <!--Zero or more repetitions:-->\r
             <booksPublished>\r
               <!--Optional:-->\r
-               <title>BBBB1</title>\r
+               <title>BBBB12345</title>\r
                <!--Optional:-->\r
                <yearOfPublishing>1984</yearOfPublishing>\r
             </booksPublished>\r
             <booksPublished>
               <!--Optional:-->
-               <title>BBBB2</title>
+               <title>BBBB22345</title>
                <!--Optional:-->
                <yearOfPublishing>1984</yearOfPublishing>
             </booksPublished>
             <!--Optional:-->\r
             <city>SSSS</city>\r
             <!--Optional:-->\r
-            <name>NNNNNNNN</name>\r
+            <name>NNNNNNNN2345</name>\r
          </publisher>\r
       </soap:importPublisher>\r
    </soapenv:Body>\r
@@ -316,30 +316,26 @@
       <soap:importBook>\r
         <book>\r
             <authors>\r
-               <firstName>AAA</firstName>\r
-              <lastName>BBB</lastName>\r
+               <firstName>11111111111111111sdcsd99999ssdAAAxk,xx</firstName>\r
+              <lastName>1111111111111111sdcsdcBBk,Bx</lastName>\r
             </authors>\r
              <authors>
-               <firstName>AAA2</firstName>
-              <lastName>BBB2</lastName>
+               <firstName>11111111111sdcsdcsddAk,AA2x</firstName>
+              <lastName>111111111111sdcsBBk,B2x</lastName>
             </authors>
-            <!--Optional:-->\r
-            <authorsHash>?</authorsHash>\r
-            <!--Optional:-->\r
+           <!--Optional:-->\r
             <publisher>\r
-               <!--Optional:-->\r
-               <id>?</id>\r
                <!--Zero or more repetitions:-->\r
                <booksPublished/>\r
                <!--Optional:-->\r
-               <city>?</city>\r
+               <city>111111111111dCsCCkCC</city>\r
                <!--Optional:-->\r
-               <name>?</name>\r
+               <name>111111111111dcsdcSSSSSSS</name>\r
             </publisher>\r
             <!--Optional:-->\r
-            <title>?</title>\r
+            <title>1111111111111111111111 SX,kSXSXDDD</title>\r
             <!--Optional:-->\r
-            <yearOfPublishing>?</yearOfPublishing>\r
+            <yearOfPublishing>1999</yearOfPublishing>\r
          </book>\r
       </soap:importBook>\r
    </soapenv:Body>\r

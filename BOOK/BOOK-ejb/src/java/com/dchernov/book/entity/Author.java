@@ -6,7 +6,8 @@
 package com.dchernov.book.entity;
 
 import com.dchernov.book.entity.abstractitem.Item;
-import java.io.Serializable;
+import com.dchernov.book.jaxb.PreventCycleXml;
+import com.dchernov.book.jaxb.PreventCycleXmlJavaTypeAdapter;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,6 +15,8 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -22,7 +25,11 @@ import javax.persistence.UniqueConstraint;
 @Entity(name = "Author")
 @Table(name = "author", uniqueConstraints = {
     @UniqueConstraint(name = "IDENTITY_KEY_Author", columnNames = {"firstname", "lastname"})})
-public class Author extends Item {
+@XmlJavaTypeAdapter(Author.PreventCycles.class)
+public class Author extends Item implements PreventCycleXml {
+
+    public static class PreventCycles extends PreventCycleXmlJavaTypeAdapter<Author> {
+    }
 
     private static final long serialVersionUID = 1L;
 
@@ -58,6 +65,18 @@ public class Author extends Item {
     public void setBooksWritten(Set<Book> booksWritten) {
         this.booksWritten = booksWritten;
     }
+
+    @XmlTransient
+    @Override
+    public boolean getXmlAlreadyProcessed() {
+        return xmldone;
+    }
+
+    @Override
+    public void setXmlAlreadyProcessed(boolean v) {
+        xmldone = v;
+    }
+    transient boolean xmldone = false;
 
     @Override
     public String toString() {

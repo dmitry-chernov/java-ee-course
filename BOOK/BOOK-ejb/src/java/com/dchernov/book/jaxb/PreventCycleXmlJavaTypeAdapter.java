@@ -22,8 +22,8 @@ public class PreventCycleXmlJavaTypeAdapter<T extends PreventCycleXml> extends
 
     @Override
     public T marshal(T v) throws Exception {
-        if (v != null && !((PreventCycleXml) v).getAlreadyProcessed()) {
-            ((PreventCycleXml) v).setAlreadyProcessed(true);
+        if (v != null && !((PreventCycleXml) v).getXmlAlreadyProcessed()) {
+            ((PreventCycleXml) v).setXmlAlreadyProcessed(true);
         } else {
             v = null;
         }
