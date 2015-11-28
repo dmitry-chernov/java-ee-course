@@ -316,7 +316,7 @@
       <soap:importBook>\r
         <book>\r
             <authors>\r
-               <firstName>11111111111111111sdcsd99999ssdAAAxk,xx</firstName>\r
+               <firstName>ZZZZZZxxxxxxxx555511111111111111111sdcsd99999ssdAAAxk,xx</firstName>\r
               <lastName>1111111111111111sdcsdcBBk,Bx</lastName>\r
             </authors>\r
              <authors>
@@ -333,7 +333,7 @@
                <name>111111111111dcsdcSSSSSSS</name>\r
             </publisher>\r
             <!--Optional:-->\r
-            <title>1111111111111111111111 SX,kSXSXDDD</title>\r
+            <title>1111111199911111111111111 SX,kSXSXDDD</title>\r
             <!--Optional:-->\r
             <yearOfPublishing>1999</yearOfPublishing>\r
          </book>\r
