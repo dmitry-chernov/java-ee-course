@@ -146,7 +146,7 @@ public class Book extends Item {
     private BookDAO lookupBookDAOBean() {
         try {
             Context c = new InitialContext();
-            return (BookDAO) c.lookup("java:global/BOOK/BOOK-ejb/BookDAO!com.dchernov.book.dao.BookDAO");
+            return (BookDAO) c.lookup("java:module/BookDAO!com.dchernov.book.dao.BookDAO");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);
